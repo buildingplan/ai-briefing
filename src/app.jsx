@@ -5,27 +5,27 @@ const TODAY = new Date().toLocaleDateString("ko-KR", {
 });
 
 const SYSTEM_PROMPT = `당신은 AI 투자 공유오피스의 전문 시장 브리핑 AI입니다.
-웹 검색으로 오늘의 최신 시장 정보를 찾아서 아래 JSON 형식으로만 응답하세요. 절대 다른 텍스트 없이 JSON만 출력하세요.
+오늘 날짜 기준으로 최신 시장 상황을 반영한 브리핑을 아래 JSON 형식으로만 응답하세요. 절대 다른 텍스트 없이 JSON만 출력하세요.
 {
   "summary": "오늘 시장 한줄 요약 (40자 이내)",
   "sentiment": "bullish 또는 bearish 또는 neutral",
   "korea": {
-    "kospi": "코스피 동향 (실제 수치 포함)",
-    "kosdaq": "코스닥 동향 (실제 수치 포함)",
+    "kospi": "코스피 동향 설명",
+    "kosdaq": "코스닥 동향 설명",
     "highlight": "한국 시장 핵심 포인트 한 줄"
   },
   "us": {
-    "sp500": "S&P500 동향 (실제 수치 포함)",
-    "nasdaq": "나스닥 동향 (실제 수치 포함)",
+    "sp500": "S&P500 동향 설명",
+    "nasdaq": "나스닥 동향 설명",
     "highlight": "미국 시장 핵심 포인트 한 줄"
   },
   "macro": {
-    "exchange_rate": "원달러 환율 (실제 수치 포함)",
+    "exchange_rate": "원달러 환율 동향",
     "interest": "금리 관련 주요 동향",
-    "commodity": "금/유가 동향 (실제 수치 포함)"
+    "commodity": "금/유가 동향"
   },
   "focus_sectors": ["주목 섹터1", "주목 섹터2", "주목 섹터3", "주목 섹터4", "주목 섹터5"],
-  "key_events": ["오늘의 주요 이벤트1", "오늘의 주요 이벤트2", "오늘의 주요 이벤트3"],
+  "key_events": ["주요 이벤트1", "주요 이벤트2", "주요 이벤트3"],
   "one_line_advice": "오늘 투자자들이 주목해야 할 핵심 한마디"
 }`;
 
@@ -56,11 +56,10 @@ export default function App() {
           "anthropic-dangerous-direct-browser-access": "true"
         },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-haiku-4-5-20251001",
           max_tokens: 1000,
-          tools: [{ type: "web_search_20250305", name: "web_search" }],
           system: SYSTEM_PROMPT,
-          messages: [{ role: "user", content: `오늘 ${TODAY} 최신 시장 데이터를 웹 검색해서 브리핑 JSON을 생성해주세요.` }]
+          messages: [{ role: "user", content: `오늘은 ${TODAY}입니다. 현재 글로벌 시장 상황을 반영한 투자 브리핑 JSON을 생성해주세요.` }]
         })
       });
       const data = await res.json();
@@ -149,11 +148,9 @@ export default function App() {
         <div className="gen-wrap">
           <div>
             <div className="gen-title">오늘의 AI 시장 브리핑</div>
-            <div className="gen-sub">버튼을 누르면 AI가 실시간으로 오늘 시장 데이터를 분석합니다</div>
+            <div className="gen-sub">버튼을 누르면 AI가 오늘 시장 데이터를 분석합니다</div>
           </div>
-          <button className="gen-btn" onClick={generate}>
-            ⚡ 오늘의 브리핑 생성
-          </button>
+          <button className="gen-btn" onClick={generate}>⚡ 오늘의 브리핑 생성</button>
         </div>
       )}
 
