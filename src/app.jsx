@@ -4,31 +4,6 @@ const TODAY = new Date().toLocaleDateString("ko-KR", {
   year: "numeric", month: "long", day: "numeric", weekday: "long"
 });
 
-const SYSTEM_PROMPT = `당신은 AI 투자 공유오피스의 전문 시장 브리핑 AI입니다.
-오늘 날짜 기준으로 최신 시장 상황을 반영한 브리핑을 아래 JSON 형식으로만 응답하세요. 절대 다른 텍스트 없이 JSON만 출력하세요.
-{
-  "summary": "오늘 시장 한줄 요약 (40자 이내)",
-  "sentiment": "bullish 또는 bearish 또는 neutral",
-  "korea": {
-    "kospi": "코스피 동향 설명",
-    "kosdaq": "코스닥 동향 설명",
-    "highlight": "한국 시장 핵심 포인트 한 줄"
-  },
-  "us": {
-    "sp500": "S&P500 동향 설명",
-    "nasdaq": "나스닥 동향 설명",
-    "highlight": "미국 시장 핵심 포인트 한 줄"
-  },
-  "macro": {
-    "exchange_rate": "원달러 환율 동향",
-    "interest": "금리 관련 주요 동향",
-    "commodity": "금/유가 동향"
-  },
-  "focus_sectors": ["주목 섹터1", "주목 섹터2", "주목 섹터3", "주목 섹터4", "주목 섹터5"],
-  "key_events": ["주요 이벤트1", "주요 이벤트2", "주요 이벤트3"],
-  "one_line_advice": "오늘 투자자들이 주목해야 할 핵심 한마디"
-}`;
-
 const sentimentMeta = {
   bullish: { label: "▲ 강세장", color: "#00c896", bg: "rgba(0,200,150,0.12)", border: "rgba(0,200,150,0.25)" },
   bearish: { label: "▼ 약세장", color: "#ff4d6d", bg: "rgba(255,77,109,0.12)", border: "rgba(255,77,109,0.25)" },
@@ -47,24 +22,11 @@ export default function App() {
     setFadeIn(false);
     setBriefing(null);
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/briefing", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY,
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true"
-        },
-        body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001",
-          max_tokens: 1000,
-          system: SYSTEM_PROMPT,
-          messages: [{ role: "user", content: `오늘은 ${TODAY}입니다. 현재 글로벌 시장 상황을 반영한 투자 브리핑 JSON을 생성해주세요.` }]
-        })
+        headers: { "Content-Type": "application/json" }
       });
-      const data = await res.json();
-      const text = data.content.filter(b => b.type === "text").map(b => b.text).join("");
-      const parsed = JSON.parse(text.replace(/```json|```/g, "").trim());
+      const parsed = await res.json();
       setBriefing(parsed);
       setTimeout(() => setFadeIn(true), 80);
     } catch {
