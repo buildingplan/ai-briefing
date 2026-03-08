@@ -49,7 +49,12 @@ export default function App() {
     try {
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
         body: JSON.stringify({
           model: "claude-sonnet-4-20250514",
           max_tokens: 1000,
@@ -129,7 +134,6 @@ export default function App() {
         .ev-num { width: 20px; height: 20px; border-radius: 50%; background: rgba(0,200,150,0.12); color: #00c896; font-size: 10px; font-family: 'DM Mono', monospace; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
       `}</style>
 
-      {/* Header */}
       <div className="hdr">
         <div className="hdr-left">
           <div className="hdr-icon">📊</div>
@@ -141,7 +145,6 @@ export default function App() {
         <div className="date-pill">{TODAY}</div>
       </div>
 
-      {/* 버튼만 보이는 초기 화면 */}
       {!briefing && !loading && (
         <div className="gen-wrap">
           <div>
@@ -154,7 +157,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 로딩 */}
       {loading && (
         <div className="loading-wrap">
           <div className="loading-ring" />
@@ -162,14 +164,10 @@ export default function App() {
         </div>
       )}
 
-      {/* 브리핑 결과 */}
       {briefing && (
         <div className="content">
           <div className={`fade ${fadeIn ? "in" : ""}`}>
-            <button className="refresh-btn" onClick={generate} disabled={loading}>
-              🔄 새로 생성
-            </button>
-
+            <button className="refresh-btn" onClick={generate} disabled={loading}>🔄 새로 생성</button>
             <div className="summary-hero">
               <div className="s-top">
                 <div className="s-badge" style={{ background: sm.bg, color: sm.color, border: `1px solid ${sm.border}` }}>{sm.label}</div>
@@ -181,7 +179,6 @@ export default function App() {
                 <div className="s-advice-text">{briefing.one_line_advice}</div>
               </div>
             </div>
-
             <div className="grid2">
               <div className="card">
                 <div className="card-lbl">🇰🇷 한국 시장</div>
@@ -196,7 +193,6 @@ export default function App() {
                 <div className="hl-box" style={{ background: "rgba(245,200,66,0.07)", color: "#f5c842" }}>{briefing.us.highlight}</div>
               </div>
             </div>
-
             <div className="card" style={{ marginBottom: 16 }}>
               <div className="card-lbl">🌐 거시경제 지표</div>
               <div className="macro-grid">
@@ -205,7 +201,6 @@ export default function App() {
                 <div className="macro-item"><div className="macro-lbl">🥇 금 / 원자재</div><div className="macro-val">{briefing.macro.commodity}</div></div>
               </div>
             </div>
-
             <div className="grid2">
               <div className="card">
                 <div className="card-lbl">🎯 오늘의 주목 섹터</div>
