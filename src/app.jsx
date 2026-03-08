@@ -121,18 +121,22 @@ export default function App() {
         @media (max-width: 600px) { .stock-grid { grid-template-columns: 1fr; } }
         .stock-card { background: rgba(255,255,255,0.028); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 18px; transition: border-color 0.2s; }
         .stock-card:hover { border-color: rgba(0,200,150,0.2); }
-        .stock-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .stock-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
         .stock-name { font-size: 15px; font-weight: 700; color: #eef2ff; }
         .stock-ticker { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
-        .stock-signal { font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px; }
+        .stock-signal { font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px; white-space: nowrap; }
+        .stock-price-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .stock-price { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; color: #eef2ff; }
+        .stock-change-pos { font-family: 'DM Mono', monospace; font-size: 12px; color: #00c896; }
+        .stock-change-neg { font-family: 'DM Mono', monospace; font-size: 12px; color: #ff4d6d; }
         .stock-market { display: inline-block; font-size: 10px; font-family: 'DM Mono', monospace; padding: 3px 8px; border-radius: 6px; background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); margin-bottom: 8px; }
         .stock-reason { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.5; font-weight: 300; margin-bottom: 10px; }
         .stock-category { font-size: 11px; font-family: 'DM Mono', monospace; color: rgba(0,200,150,0.7); }
         .caution-box { background: rgba(245,200,66,0.06); border: 1px solid rgba(245,200,66,0.15); border-radius: 12px; padding: 14px 18px; display: flex; gap: 10px; align-items: flex-start; }
         .caution-text { font-size: 13px; color: rgba(245,200,66,0.8); line-height: 1.6; font-weight: 300; }
+        .disclaimer { font-size: 11px; color: rgba(255,255,255,0.2); text-align: center; margin-top: 16px; font-family: 'DM Mono', monospace; }
       `}</style>
 
-      {/* Header */}
       <div className="hdr">
         <div className="hdr-left">
           <div className="hdr-icon">📊</div>
@@ -144,17 +148,11 @@ export default function App() {
         <div className="date-pill">{TODAY}</div>
       </div>
 
-      {/* Tabs */}
       <div className="tabs">
-        <button className={`tab ${tab === "briefing" ? "active" : ""}`} onClick={() => setTab("briefing")}>
-          📈 시장 브리핑
-        </button>
-        <button className={`tab ${tab === "scanner" ? "active" : ""}`} onClick={() => setTab("scanner")}>
-          🔍 종목 스캐너
-        </button>
+        <button className={`tab ${tab === "briefing" ? "active" : ""}`} onClick={() => setTab("briefing")}>📈 시장 브리핑</button>
+        <button className={`tab ${tab === "scanner" ? "active" : ""}`} onClick={() => setTab("scanner")}>🔍 종목 스캐너</button>
       </div>
 
-      {/* 브리핑 탭 */}
       {tab === "briefing" && (
         <>
           {!briefing && !loadingB && (
@@ -166,12 +164,7 @@ export default function App() {
               <button className="gen-btn" onClick={generateBriefing}>⚡ 오늘의 브리핑 생성</button>
             </div>
           )}
-          {loadingB && (
-            <div className="loading-wrap">
-              <div className="loading-ring" />
-              <div className="loading-text">AI가 시장 데이터를 수집하고 있습니다...</div>
-            </div>
-          )}
+          {loadingB && <div className="loading-wrap"><div className="loading-ring" /><div className="loading-text">AI가 시장 데이터를 수집하고 있습니다...</div></div>}
           {briefing && !loadingB && (
             <div className="content">
               <div className={`fade ${fadeIn ? "in" : ""}`}>
@@ -182,10 +175,7 @@ export default function App() {
                     <div className="s-label">TODAY'S MARKET BRIEF</div>
                   </div>
                   <div className="s-text">{briefing.summary}</div>
-                  <div className="s-advice">
-                    <div style={{ fontSize: 16, flexShrink: 0 }}>💡</div>
-                    <div className="s-advice-text">{briefing.one_line_advice}</div>
-                  </div>
+                  <div className="s-advice"><div style={{ fontSize: 16, flexShrink: 0 }}>💡</div><div className="s-advice-text">{briefing.one_line_advice}</div></div>
                 </div>
                 <div className="grid2">
                   <div className="card">
@@ -216,14 +206,7 @@ export default function App() {
                   </div>
                   <div className="card">
                     <div className="card-lbl">📅 오늘의 주요 이벤트</div>
-                    <div className="ev-list">
-                      {briefing.key_events.map((e, i) => (
-                        <div key={i} className="ev-item">
-                          <div className="ev-num">{i + 1}</div>
-                          <span>{e}</span>
-                        </div>
-                      ))}
-                    </div>
+                    <div className="ev-list">{briefing.key_events.map((e, i) => <div key={i} className="ev-item"><div className="ev-num">{i + 1}</div><span>{e}</span></div>)}</div>
                   </div>
                 </div>
               </div>
@@ -232,24 +215,18 @@ export default function App() {
         </>
       )}
 
-      {/* 종목 스캐너 탭 */}
       {tab === "scanner" && (
         <>
           {!scanner && !loadingS && (
             <div className="gen-wrap">
               <div>
                 <div className="gen-title">AI 종목 스캐너</div>
-                <div className="gen-sub">AI가 오늘 주목할 만한 종목을 분석합니다</div>
+                <div className="gen-sub">실시간 주가 데이터를 기반으로 AI가 주목 종목을 분석합니다</div>
               </div>
               <button className="gen-btn" onClick={generateScanner}>🔍 종목 스캔 시작</button>
             </div>
           )}
-          {loadingS && (
-            <div className="loading-wrap">
-              <div className="loading-ring" />
-              <div className="loading-text">AI가 종목을 분석하고 있습니다...</div>
-            </div>
-          )}
+          {loadingS && <div className="loading-wrap"><div className="loading-ring" /><div className="loading-text">실시간 데이터를 수집하고 있습니다...</div></div>}
           {scanner && !loadingS && (
             <div className="content">
               <div className={`fade ${fadeIn ? "in" : ""}`}>
@@ -261,6 +238,7 @@ export default function App() {
                 <div className="stock-grid">
                   {scanner.stocks.map((stock, i) => {
                     const sig = signalMeta[stock.signal] || signalMeta.watch;
+                    const isPos = parseFloat(stock.changePercent) >= 0;
                     return (
                       <div key={i} className="stock-card">
                         <div className="stock-top">
@@ -270,6 +248,14 @@ export default function App() {
                           </div>
                           <div className="stock-signal" style={{ background: sig.bg, color: sig.color }}>{sig.label}</div>
                         </div>
+                        {stock.price && (
+                          <div className="stock-price-row">
+                            <span className="stock-price">{stock.market === "KR" ? `₩${Number(stock.price).toLocaleString()}` : `$${stock.price}`}</span>
+                            <span className={isPos ? "stock-change-pos" : "stock-change-neg"}>
+                              {isPos ? "▲" : "▼"} {Math.abs(stock.changePercent)}%
+                            </span>
+                          </div>
+                        )}
                         <div className="stock-market">{stock.market === "KR" ? "🇰🇷 한국" : "🇺🇸 미국"}</div>
                         <div className="stock-reason">{stock.reason}</div>
                         <div className="stock-category">#{stock.category}</div>
@@ -281,6 +267,7 @@ export default function App() {
                   <div style={{ fontSize: 16, flexShrink: 0 }}>⚠️</div>
                   <div className="caution-text">{scanner.caution}</div>
                 </div>
+                <div className="disclaimer">본 서비스는 투자 참고용이며 투자 권유가 아닙니다. 투자의 최종 판단은 본인에게 있습니다.</div>
               </div>
             </div>
           )}
